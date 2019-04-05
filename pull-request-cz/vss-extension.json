@@ -1,0 +1,95 @@
+{
+    "manifestVersion": 1,
+    "id": "sien-vsts-pull-request",
+    "publisher": "aguafrommars",
+    "version": "1.0.19",
+    "name": "CommitiZen Pull Request",
+    "description": "Complete a Pull Request with conventional commit",
+    "public": false,
+    "categories": ["Azure Repos"],
+    "icons": {
+        "default": "doc/assets/icon-vsts-extension.png"
+    },
+    "links": {
+        "getstarted": {
+            "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_git/sien-vsts-pull-request?path=%2FREADME.md&version=GBmaster&_a=preview"
+        },
+        "support": {
+            "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_backlogs/board/Backlog%20items"
+        },
+        "repository": {
+            "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_git/sien-vsts-pull-request"
+        }
+    },
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_git/sien-vsts-pull-request"
+    },
+    "scopes": [
+        "vso.code_full"
+    ],
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "pull-request-commitizen",
+            "type": "ms.vss-web.action",
+            "description": "Shows commititen pull request action menu.",
+            "targets": [
+                "ms.vss-code-web.pull-request-action-menu"
+            ],
+            "properties": {
+                "text": "CommitiZen",
+                "title": "CommitiZen",
+                "icon": "images/show-properties.png",
+                "groupId": "actions",
+                "uri": "main.html",
+                "registeredObjectId": "pr-commiti-zen"
+            }
+        },
+        {
+            "id": "contextForm",
+            "type": "ms.vss-web.control",
+            "description": "The content displayed in the dialog shown in the contributed menu actions from this extension.",
+            "targets": [ ],
+            "properties": {
+                "uri": "contextForm.html"
+            }
+        }
+    ],
+    "files": [
+        {
+            "path": "main.html",
+            "addressable": true
+        },
+        {
+            "path": "scripts",
+            "addressable": true
+        },
+        {
+            "path": "images",
+            "addressable": true
+        },
+        {
+            "path": "doc",
+            "addressable": true
+        },
+        {
+            "path": "contextForm.html",
+            "addressable": true
+        },
+        {
+            "path": "node_modules/vss-web-extension-sdk/lib",
+            "addressable": true,
+            "packagePath": "lib"
+        }
+    ]
+}
