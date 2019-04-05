@@ -24,6 +24,16 @@ for:
 -
   branches:
     only:
+    - master
+  on_success:
+  - cmd: >-
+      cd pull-request-cz
+    
+      tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token%
+for:
+-
+  branches:
+    only:
     - /release\/*/
   on_success:
   - cmd: >-
