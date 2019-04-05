@@ -1,5 +1,12 @@
 version: 1.0.{build}
 image: Visual Studio 2017
+skip_commits:
+  message: /^chore(release)/
+branches:
+  only:
+  - master
+  - /preview\/*/ 
+  - /release\/*/
 environment:
   publish-token:
     secure: NEPxqNv122RRwPZLn9HGF4wld0VbuxFhXIjQMw8mYbkaSudpMQc1Yr2TqRc1uCvbbFfwMYVHu4/S2SfoXnrmmQ==
