@@ -33,11 +33,11 @@ for:
     only:
     - master
   on_success:
-  - cmd: tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token%
+  - cmd: if "%APPVEYOR_PULL_REQUEST_NUMBER%" EQU "" ( tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% )
 -
   branches:
     only:
     - /release\/*/
   on_success:
   - cmd: >-
-      tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }"
+      if "%APPVEYOR_PULL_REQUEST_NUMBER%" EQU "" ( tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }" )
