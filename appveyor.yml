@@ -33,16 +33,10 @@ for:
     only:
     - master
   on_success:
-  - cmd: >-
-      cd pull-request-cz
-    
-      tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token%
+  - cmd: tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token%
 -
   branches:
     only:
     - /release\/*/
   on_success:
-  - cmd: >-
-      cd pull-request-cz
-    
-      tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }"
+  - cmd: tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }"
