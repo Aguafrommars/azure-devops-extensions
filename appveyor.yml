@@ -3,6 +3,8 @@ image: Visual Studio 2017
 environment:
   publish-token:
     secure: NEPxqNv122RRwPZLn9HGF4wld0VbuxFhXIjQMw8mYbkaSudpMQc1Yr2TqRc1uCvbbFfwMYVHu4/S2SfoXnrmmQ==
+  GH_TOKEN: 
+    secure: 0NJdORJRFjpB0dwUYv7bVNsbkldkoBhnvWik/CTOwAF/k9kP+/uTWMFnDcpEpt8E
 install:
 - cmd: npm install terser -g
 - cmd: npm install replace-in-file -g
