@@ -1,0 +1,30 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+environment:
+  publish-token:
+    secure: NEPxqNv122RRwPZLn9HGF4wld0VbuxFhXIjQMw8mYbkaSudpMQc1Yr2TqRc1uCvbbFfwMYVHu4/S2SfoXnrmmQ==
+install:
+- cmd: npm install terser -g
+- cmd: npm install replace-in-file -g
+- cmd: npm i -g tfx-cli
+- cmd: gitversion /l console /output buildserver
+- ps: ./appveyorinit.ps1
+build_script:
+- cmd: >-
+    cd pull-request-cz
+
+    make.cmd
+artifacts:
+- path: pull-request-cz/dist/*vsix
+  name: package
+deploy:
+for:
+-
+  branches:
+    only:
+    - /release\/*/
+  on_success:
+  - cmd: >-
+      cd pull-request-cz
+    
+      tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }"

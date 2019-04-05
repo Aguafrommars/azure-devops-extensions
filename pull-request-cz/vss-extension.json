@@ -1,8 +1,8 @@
 {
     "manifestVersion": 1,
-    "id": "sien-vsts-pull-request",
+    "id": "cz-pull-request",
     "publisher": "aguafrommars",
-    "version": "1.0.19",
+    "version": "1.0.20",
     "name": "CommitiZen Pull Request",
     "description": "Complete a Pull Request with conventional commit",
     "public": false,
