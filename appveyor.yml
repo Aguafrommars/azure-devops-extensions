@@ -33,11 +33,11 @@ for:
     only:
     - master
   on_success:
-  - cmd: if "%APPVEYOR_PULL_REQUEST_NUMBER%" EQU "" ( tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% )
+  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publish-token }
 -
   branches:
     only:
     - /release\/*/
   on_success:
-  - cmd: >-
-      if "%APPVEYOR_PULL_REQUEST_NUMBER%" EQU "" ( tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true, {"galleryFlags": []}" )
+  - ps: >-
+      if ($env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publish-token --overrides-file ..\override.json
