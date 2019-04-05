@@ -14,6 +14,8 @@ else
     $nextversion = $env:GitVersion_MajorMinorPatch
 }
 
+$nextversion = $nextversion.Trim()
+
 appveyor SetVariable -Name SemVer -Value $nextversion
 appveyor AddMessage "SemVer = $nextversion"
 
