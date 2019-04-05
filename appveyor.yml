@@ -39,4 +39,5 @@ for:
     only:
     - /release\/*/
   on_success:
-  - cmd: tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }"
+  - cmd: >-
+      tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }"
