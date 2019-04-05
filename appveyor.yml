@@ -20,6 +20,7 @@ artifacts:
 - path: pull-request-cz/dist/*vsix
   name: package
 deploy:
+for:
 -
   branches:
     only:
@@ -29,7 +30,6 @@ deploy:
       cd pull-request-cz
     
       tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token%
-for:
 -
   branches:
     only:
