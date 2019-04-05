@@ -40,4 +40,4 @@ for:
     - /release\/*/
   on_success:
   - cmd: >-
-      if "%APPVEYOR_PULL_REQUEST_NUMBER%" EQU "" ( tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true }" )
+      if "%APPVEYOR_PULL_REQUEST_NUMBER%" EQU "" ( tfx extension publish --vsix dist\aguafrommars.cz-pull-request-%Version%.vsix --token %publish-token% --override "{\"public\": true, {"galleryFlags": []}" )
