@@ -8,7 +8,7 @@ branches:
   - /preview\/*/ 
   - /release\/*/
 environment:
-  publish-token:
+  publishtoken:
     secure: NEPxqNv122RRwPZLn9HGF4wld0VbuxFhXIjQMw8mYbkaSudpMQc1Yr2TqRc1uCvbbFfwMYVHu4/S2SfoXnrmmQ==
   GH_TOKEN: 
     secure: 0NJdORJRFjpB0dwUYv7bVNsbkldkoBhnvWik/CTOwAF/k9kP+/uTWMFnDcpEpt8E
@@ -33,11 +33,11 @@ for:
     only:
     - master
   on_success:
-  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publish-token }
+  - ps: if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publishtoken }
 -
   branches:
     only:
     - /release\/*/
   on_success:
   - ps: >-
-      if ($env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publish-token --overrides-file ..\override.json
+      if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publishtoken --overrides-file ..\override.json
