@@ -5,10 +5,8 @@
     "version": "1.0.20",
     "name": "CommitiZen Pull Request",
     "description": "Complete a Pull Request with conventional commit",
-    "galleryFlags": [
-        "Preview"
-    ],
     "categories": ["Azure Repos"],
+    "public": true,
     "icons": {
         "default": "doc/assets/icon-vsts-extension.png"
     },
