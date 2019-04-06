@@ -33,11 +33,11 @@ for:
     only:
     - master
   on_success:
-  - ps: if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publishtoken }
+  - ps: if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:SemVer.vsix --token $env:publishtoken }
 -
   branches:
     only:
     - /release\/*/
   on_success:
   - ps: >-
-      if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:Version.vsix --token $env:publishtoken --overrides-file ..\override.json
+      if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:SemVer.vsix --token $env:publishtoken --overrides-file ..\override.json
