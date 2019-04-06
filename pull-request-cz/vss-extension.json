@@ -23,10 +23,6 @@
             "uri": "https://github.com/aguacongas/azure-devops-extensions"
         }
     },
-    "repository": {
-        "type": "git",
-        "uri": "https://github.com/aguacongas/azure-devops-extensions"
-    },
     "content": {
         "details": {
             "path": "overview.md"
@@ -34,7 +30,7 @@
     },
     "repository": {
         "type": "git",
-        "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_git/sien-vsts-pull-request"
+        "uri": "https://github.com/aguacongas/azure-devops-extensions"
     },
     "scopes": [
         "vso.code_full"
