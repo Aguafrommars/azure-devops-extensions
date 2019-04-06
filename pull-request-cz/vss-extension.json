@@ -14,14 +14,18 @@
     },
     "links": {
         "getstarted": {
-            "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_git/sien-vsts-pull-request?path=%2FREADME.md&version=GBmaster&_a=preview"
+            "uri": "https://github.com/aguacongas/azure-devops-extensions/blob/master/pull-request-cz/README.md"
         },
         "support": {
-            "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_backlogs/board/Backlog%20items"
+            "uri": "https://github.com/aguacongas/azure-devops-extensions/issues"
         },
         "repository": {
-            "uri": "https://tfs.ne.ch/tfs/SIEN/CSOL/Architecture%20Transversale/_git/sien-vsts-pull-request"
+            "uri": "https://github.com/aguacongas/azure-devops-extensions"
         }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/aguacongas/azure-devops-extensions"
     },
     "content": {
         "details": {
