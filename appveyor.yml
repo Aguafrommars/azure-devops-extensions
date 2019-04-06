@@ -40,4 +40,6 @@ for:
     - /release\/*/
   on_success:
   - ps: >-
-      if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:SemVer.$env:GitVersion_BuildMetaData.vsix --token $env:publishtoken --overrides-file ..\override.json
+      if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { 
+        tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:SemVer.$env:GitVersion_BuildMetaData.vsix --token $env:publishtoken --overrides-file ..\override.json
+      }
