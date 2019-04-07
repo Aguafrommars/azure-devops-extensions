@@ -33,8 +33,6 @@ for:
     only:
     - master
   on_success:
-  - cmd: >-
-    tfx extension create --override "{\"version\": \"%SemVer%.%GitVersion_BuildMetaData%\"}" --overrides-file ..\override.json --output-path dist
   - ps: >-
       if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { 
         tfx extension publish --vsix dist\aguafrommars.cz-pull-request-$env:SemVer.$env:GitVersion_BuildMetaData.vsix --token $env:publishtoken
