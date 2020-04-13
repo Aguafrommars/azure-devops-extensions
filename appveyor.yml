@@ -8,16 +8,15 @@ branches:
   - /preview\/*/ 
   - /release\/*/
 environment:
-  publishtoken:
-    secure: NEPxqNv122RRwPZLn9HGF4wld0VbuxFhXIjQMw8mYbkaSudpMQc1Yr2TqRc1uCvbbFfwMYVHu4/S2SfoXnrmmQ==
   GH_TOKEN: 
     secure: 0NJdORJRFjpB0dwUYv7bVNsbkldkoBhnvWik/CTOwAF/k9kP+/uTWMFnDcpEpt8E
 install:
-- cmd: npm install terser -g
-- cmd: npm install replace-in-file -g
-- cmd: npm i -g tfx-cli
-- cmd: gitversion /l console /output buildserver
-- ps: ./appveyorinit.ps1
+  - ps: Install-Product node ''
+  - cmd: npm install terser -g
+  - cmd: npm install replace-in-file -g
+  - cmd: npm i -g tfx-cli
+  - cmd: gitversion /l console /output buildserver
+  - ps: ./appveyorinit.ps1
 build_script:
 - cmd: >-
     cd pull-request-cz
