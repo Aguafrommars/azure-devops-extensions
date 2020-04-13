@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <title>CommitiZen</title>
     <script src="lib/VSS.SDK.js"></script>
@@ -9,11 +10,12 @@
             text-align: right;
             padding-top: 10px;
         }
+
         .widget-configuration textarea {
             width: 100% !important;
             height: 100px !important;
         }
-        </style>
+    </style>
 </head>
 
 <body>
@@ -26,30 +28,34 @@
         <div class="single-line-text-input">
             <label for="scope">Scope:</label>
             <input id="scope" type="text" name="scope" placeholder="Denote the SCOPE of this change (optional)" />
-        </div>        
+        </div>
         <div class="single-line-text-input">
             <label for="subject">Subject:</label>
-            <input id="subject" type="text" name="subject" placeholder="Write a SHORT, IMPERATIVE tense description of the change" maxlength="50" />
-        </div>    
+            <input id="subject" type="text" name="subject"
+                placeholder="Write a SHORT, IMPERATIVE tense description of the change" maxlength="50" />
+        </div>
         <div class="multi-line-text-input">
-            <label for="msgbody">Boby:</label>
-            <textarea id="msgbody" name="msgbody" placeholder='Provide a LONGER description of the chanhe (optional)'></textarea>
-        </div>    
+            <label for="msgbody">Body:</label>
+            <textarea id="msgbody" name="msgbody"
+                placeholder='Provide a LONGER description of the change (optional)'></textarea>
+        </div>
         <div class="single-line-text-input">
             <label for="breaking-changes">Breaking changes:</label>
-            <input id="breaking-changes" type="text" name="breaking-changes" placeholder="List any BREAKING CHANGES (optional)"/>
-        </div>    
+            <input id="breaking-changes" type="text" name="breaking-changes"
+                placeholder="List any BREAKING CHANGES (optional)" />
+        </div>
         <div class="single-line-text-input">
             <label for="closes">Closes:</label>
-            <input id="closes" type="text" name="closes" placeholder="List any ISSUES CLOSES by this change (optional). E.g.: #31, #34"/>
+            <input id="closes" type="text" name="closes"
+                placeholder="List any ISSUES CLOSED by this change (optional). E.g.: #31, #34" />
         </div>
         <fieldset class="checkbox">
             <input type="checkbox" id="complete-workitems" name="check" checked="true" />
-            <label for="complete-workitems">Complete linked work items after merging</label><br/>
+            <label for="complete-workitems">Complete linked work items after merging</label><br />
             <input type="checkbox" id="delete-source-branch" name="check" checked="true" />
-            <label id="delete-source-branch-label" for="delete-source-branch"></label><br/>
+            <label id="delete-source-branch-label" for="delete-source-branch"></label><br />
             <input type="checkbox" id="squash" name="check" />
-            <label for="squash">Squash changes when merging</label><br/>
+            <label for="squash">Squash changes when merging</label><br />
         </fieldset>
         <div class="ui-dialog-buttonpane ui-helper-clearfix bowtie">
             <div class="ui-dialog-buttonset">
@@ -64,9 +70,10 @@
                 <button id="cancel" type="button" class="ui-button ui-widget ui-state-default ui-corner-all">
                     Cancel
                 </button>
-            </div>            
+            </div>
         </div>
     </div>
     <script src="scripts/context.js"></script>
 </body>
+
 </html>
