@@ -22,6 +22,8 @@ function registerContribution(context) {
     ];
 
     var typeValue;
+    pr.pullRequestCard = pr.pullRequestCard || {};
+    pr.pullRequestCard.gitPullRequest = pr.pullRequestCard.gitPullRequest || {};
     const completionOptions = pr.pullRequestCard.gitPullRequest.completionOptions;
     if (completionOptions) {
         const msg =  completionOptions.mergeCommitMessage;
