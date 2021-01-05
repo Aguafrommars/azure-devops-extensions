@@ -341,11 +341,16 @@ function registerContribution(context) {
     VSS.register("registration-form", registrationForm);
 }
 
-VSS.init({explicitNotifyLoaded: true, usePlatformScripts: true, usePlatformStyles: true, extensionReusedCallback: registerContribution });
+VSS.init({
+    explicitNotifyLoaded: true,
+    usePlatformScripts: true,
+    usePlatformStyles: true,
+    applyTheme: true,
+    extensionReusedCallback: registerContribution });
 
 // Show context info when ready
 VSS.ready(function () {
     const context = VSS.getWebContext();
-    registerContribution(context);    
+    registerContribution(context);
     VSS.notifyLoadSucceeded();
 });
