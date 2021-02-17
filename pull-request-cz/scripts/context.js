@@ -7,6 +7,7 @@ VSS.require("TFS/Dashboards/WidgetHelpers", function (WidgetHelpers) {
 
 // We need to register the new contribution if this extension host is reused
 function registerContribution(context) {
+    
     const pr = VSS.getConfiguration().properties.pullRequest;
     var selectedType;
     const commitTypes = ["feat - A new feature",
@@ -236,7 +237,7 @@ function registerContribution(context) {
                 const patch = {
                     status: 3,
                     completionOptions: getCompletionOptions(),
-                    lastMergeSourceCommit: pr.pullRequestCard.gitPullRequest.lastMergeSourceCommit
+                    lastMergeSourceCommit: pr.lastMergeSourceCommit || pr.pullRequestCard.gitPullRequest.lastMergeSourceCommit
                 }
     
                 gitClient.updatePullRequest(patch, pr.repositoryId, pr.pullRequestId)
@@ -341,11 +342,16 @@ function registerContribution(context) {
     VSS.register("registration-form", registrationForm);
 }
 
-VSS.init({explicitNotifyLoaded: true, usePlatformScripts: true, usePlatformStyles: true, extensionReusedCallback: registerContribution });
+VSS.init({
+    explicitNotifyLoaded: true,
+    usePlatformScripts: true,
+    usePlatformStyles: true,
+    applyTheme: true,
+    extensionReusedCallback: registerContribution });
 
 // Show context info when ready
 VSS.ready(function () {
     const context = VSS.getWebContext();
-    registerContribution(context);    
+    registerContribution(context);
     VSS.notifyLoadSucceeded();
 });
