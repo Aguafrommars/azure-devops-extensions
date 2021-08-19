@@ -13,12 +13,12 @@ function registerContribution(context) {
     const commitTypes = ["feat - A new feature",
     "fix - A bug fix",
     "docs - Documentation only changes",
-    "style - Changes that not affect the meaning of the code",
-    "refactor - A code change that neither fix a bug nor adds a feature",
+    "style - Changes that do not affect code logic",
+    "refactor - A code change that is neither a fix or a feature",
     "perf - A code change that improves performance",
     "test - Adding missing tests or correcting existing tests",
     "build - Changes that affect the build system or external dependencies",
-    "ci - Changes to oour CI configuration files ans scripts",
+    "ci - Changes to the CI configuration files and/or scripts",
     "revert - Revert a previous commit"
     ];
 
