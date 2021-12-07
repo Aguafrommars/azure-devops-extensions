@@ -191,7 +191,9 @@ function registerContribution(context) {
 
     const registrationForm = (function() {
         var callbacks = [];
-
+        var prTitle;
+        var prDescription;
+        
         $("#cancel").on("click", function() {
             notify();
         });
@@ -211,7 +213,9 @@ function registerContribution(context) {
                     autoCompleteSetBy: {
                         id: context.user.id
                     },
-                    completionOptions: getCompletionOptions()
+                    completionOptions: getCompletionOptions(),
+                    title: prTitle,
+                    description: prDescription
                 }
     
                 gitClient.updatePullRequest(patch, pr.repositoryId, pr.pullRequestId)
@@ -237,7 +241,9 @@ function registerContribution(context) {
                 const patch = {
                     status: 3,
                     completionOptions: getCompletionOptions(),
-                    lastMergeSourceCommit: pr.lastMergeSourceCommit || pr.pullRequestCard.gitPullRequest.lastMergeSourceCommit
+                    lastMergeSourceCommit: pr.lastMergeSourceCommit || pr.pullRequestCard.gitPullRequest.lastMergeSourceCommit,
+                    title: prTitle,
+                    description: prDescription
                 }
     
                 gitClient.updatePullRequest(patch, pr.repositoryId, pr.pullRequestId)
@@ -263,24 +269,25 @@ function registerContribution(context) {
     
         function getCompletionOptions() {
             const completionOptions = {};
-            var mergeCommitMessage = selectedType;
+            prTitle = selectedType;
             const scope = getInputValue("scope");
             if (scope) {
-                mergeCommitMessage = mergeCommitMessage + `(${scope})`
+                prTitle = prTitle + `(${scope})`
             }
-            mergeCommitMessage = mergeCommitMessage + `: ${getInputValue("subject")}\n\n${getInputValue("msgbody")}`
+            prTitle = prTitle + `: ${getInputValue("subject")}`;
+            prDescription = `{getInputValue("msgbody")}`;
             const breakingChanges = getInputValue("breaking-changes");
             const closes = getInputValue("closes");
             if (breakingChanges || closes) {
-                mergeCommitMessage = mergeCommitMessage + "\n\n";
+                prDescription = prDescription + "\n\n";
             }
             if (breakingChanges) {
-                mergeCommitMessage = mergeCommitMessage + `BREAKING CHANGE: ${breakingChanges}\n`
+                prDescription = prDescription + `BREAKING CHANGE: ${breakingChanges}\n`;
             }
             if (closes) {
-                mergeCommitMessage = mergeCommitMessage + `Closes: ${closes}\n`
+                prDescription = prDescription + `Closes: ${closes}\n`;
             }
-            completionOptions.mergeCommitMessage = mergeCommitMessage;
+            completionOptions.mergeCommitMessage = prTitle + "\n\n" + prDescription;
             if (document.getElementById("squash").checked) {
                 completionOptions.squashMerge = true;
             } else {
