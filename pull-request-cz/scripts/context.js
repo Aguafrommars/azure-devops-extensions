@@ -27,45 +27,13 @@ function registerContribution(context) {
     pr.pullRequestCard.gitPullRequest = pr.pullRequestCard.gitPullRequest || {};
     const completionOptions = pr.pullRequestCard.gitPullRequest.completionOptions;
     if (completionOptions) {
-        const msg =  completionOptions.mergeCommitMessage;
-        const msgHeaders = msg.split(":")[0].split("(");
-        const commitType = msgHeaders[0];
-        for (const s of commitTypes) {
-            if (s.startsWith(commitType)) {
-                selectedType = commitType;
-                typeValue = s;
-                break;
-            }
-        }
-        if (msgHeaders.length > 1) {
-            const scope = msgHeaders[1].split(")")[0];
-            if (scope) {
-                $("#scope").val(scope);
-            }
-        }
-        const msgSegments = msg.split("\n");
-        const firstLine = msgSegments[0];
-        const subject = firstLine.substring(firstLine.indexOf(": ") + 2);
-        $("#subject").val(subject);
-        var body = "";
-        for(var i = 2; i < msgSegments.length; i++) {
-            const line = msgSegments[i];
-            if (line.startsWith("BREAKING CHANGE: ")) {
-                $("#breaking-changes").val(line.split("BREAKING CHANGE: ")[1]);
-            } else if (line.startsWith("Closes: ")) {
-                $("#closes").val(line.split("Closes: ")[1]);
-            } else {
-                body = body + line + '\n';
-            }
-        }
-
-        $("#msgbody").val(body.trim());
+        setFields(completionOptions.mergeCommitMessage)
 
         document.getElementById("squash").checked = completionOptions.squashMerge || false;
         document.getElementById("delete-source-branch").checked = completionOptions.deleteSourceBranch || true;
         document.getElementById("complete-workitems").checked = completionOptions.transitionWorkItems || true;
     } else {
-        $("#subject").val(pr.description);
+        setFields(`${pr.title}\n\n${pr.description}`)
     }
 
     var saveSquash = false;
@@ -161,6 +129,46 @@ function registerContribution(context) {
     });
 
     createTypeCombo();
+
+    function setFields(msg) {
+        const msgHeaders = msg.split(":")[0].split("(");
+        const commitType = msgHeaders[0];
+        for (const s of commitTypes) {
+            if (s.startsWith(commitType)) {
+                selectedType = commitType;
+                typeValue = s;
+                break;
+            }
+        }
+        if (msgHeaders.length > 1) {
+            const scope = msgHeaders[1].split(")")[0];
+            if (scope) {
+                $("#scope").val(scope);
+            }
+        }
+
+        const msgSegments = msg.split("\n");
+        const firstLine = msgSegments[0];
+        if (firstLine.indexOf(": ") > -1) {
+            const subject = firstLine.substring(firstLine.indexOf(": ") + 2);
+            $("#subject").val(subject);    
+        } else {
+            $("#subject").val(firstLine);
+        }
+        var body = "";
+        for(var i = 2; i < msgSegments.length; i++) {
+            const line = msgSegments[i];
+            if (line.startsWith("BREAKING CHANGE: ")) {
+                $("#breaking-changes").val(line.split("BREAKING CHANGE: ")[1]);
+            } else if (line.startsWith("Closes: ")) {
+                $("#closes").val(line.split("Closes: ")[1]);
+            } else {
+                body = body + line + '\n';
+            }
+        }
+
+        $("#msgbody").val(body.trim());
+    }
 
     function createTypeCombo() {
         VSS.require(["VSS/Controls", "VSS/Controls/Combos"], function(Controls, Combos) {
