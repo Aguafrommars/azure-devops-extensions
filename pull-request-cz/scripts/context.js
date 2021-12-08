@@ -13,12 +13,12 @@ function registerContribution(context) {
     const commitTypes = ["feat - A new feature",
     "fix - A bug fix",
     "docs - Documentation only changes",
-    "style - Changes that not affect the meaning of the code",
-    "refactor - A code change that neither fix a bug nor adds a feature",
+    "style - Changes that do not affect code logic",
+    "refactor - A code change that is neither a fix or a feature",
     "perf - A code change that improves performance",
     "test - Adding missing tests or correcting existing tests",
     "build - Changes that affect the build system or external dependencies",
-    "ci - Changes to oour CI configuration files ans scripts",
+    "ci - Changes to the CI configuration files and/or scripts",
     "revert - Revert a previous commit"
     ];
 
@@ -27,45 +27,13 @@ function registerContribution(context) {
     pr.pullRequestCard.gitPullRequest = pr.pullRequestCard.gitPullRequest || {};
     const completionOptions = pr.pullRequestCard.gitPullRequest.completionOptions;
     if (completionOptions) {
-        const msg =  completionOptions.mergeCommitMessage;
-        const msgHeaders = msg.split(":")[0].split("(");
-        const commitType = msgHeaders[0];
-        for (const s of commitTypes) {
-            if (s.startsWith(commitType)) {
-                selectedType = commitType;
-                typeValue = s;
-                break;
-            }
-        }
-        if (msgHeaders.length > 1) {
-            const scope = msgHeaders[1].split(")")[0];
-            if (scope) {
-                $("#scope").val(scope);
-            }
-        }
-        const msgSegments = msg.split("\n");
-        const firstLine = msgSegments[0];
-        const subject = firstLine.substring(firstLine.indexOf(": ") + 2);
-        $("#subject").val(subject);
-        var body = "";
-        for(var i = 2; i < msgSegments.length; i++) {
-            const line = msgSegments[i];
-            if (line.startsWith("BREAKING CHANGE: ")) {
-                $("#breaking-changes").val(line.split("BREAKING CHANGE: ")[1]);
-            } else if (line.startsWith("Closes: ")) {
-                $("#closes").val(line.split("Closes: ")[1]);
-            } else {
-                body = body + line + '\n';
-            }
-        }
-
-        $("#msgbody").val(body.trim());
+        setFields(completionOptions.mergeCommitMessage)
 
         document.getElementById("squash").checked = completionOptions.squashMerge || false;
         document.getElementById("delete-source-branch").checked = completionOptions.deleteSourceBranch || true;
         document.getElementById("complete-workitems").checked = completionOptions.transitionWorkItems || true;
     } else {
-        $("#subject").val(pr.description);
+        setFields(`${pr.title}\n\n${pr.description}`)
     }
 
     var saveSquash = false;
@@ -152,6 +120,7 @@ function registerContribution(context) {
                         checkbox.checked = value.transitionWorkItems;
                     }
                     document.getElementById("delete-source-branch").checked = value.deleteSourceBranch;
+                    document.getElementById("update-pr").checked = value.updatePR;
                 });
             });
                     
@@ -160,6 +129,46 @@ function registerContribution(context) {
     });
 
     createTypeCombo();
+
+    function setFields(msg) {
+        const msgHeaders = msg.split(":")[0].split("(");
+        const commitType = msgHeaders[0];
+        for (const s of commitTypes) {
+            if (s.startsWith(commitType)) {
+                selectedType = commitType;
+                typeValue = s;
+                break;
+            }
+        }
+        if (msgHeaders.length > 1) {
+            const scope = msgHeaders[1].split(")")[0];
+            if (scope) {
+                $("#scope").val(scope);
+            }
+        }
+
+        const msgSegments = msg.split("\n");
+        const firstLine = msgSegments[0];
+        if (firstLine.indexOf(": ") > -1) {
+            const subject = firstLine.substring(firstLine.indexOf(": ") + 2);
+            $("#subject").val(subject);    
+        } else {
+            $("#subject").val(firstLine);
+        }
+        var body = "";
+        for(var i = 2; i < msgSegments.length; i++) {
+            const line = msgSegments[i];
+            if (line.startsWith("BREAKING CHANGE: ")) {
+                $("#breaking-changes").val(line.split("BREAKING CHANGE: ")[1]);
+            } else if (line.startsWith("Closes: ")) {
+                $("#closes").val(line.split("Closes: ")[1]);
+            } else {
+                body = body + line + '\n';
+            }
+        }
+
+        $("#msgbody").val(body.trim());
+    }
 
     function createTypeCombo() {
         VSS.require(["VSS/Controls", "VSS/Controls/Combos"], function(Controls, Combos) {
@@ -191,7 +200,9 @@ function registerContribution(context) {
 
     const registrationForm = (function() {
         var callbacks = [];
-
+        var prTitle;
+        var prDescription;
+        
         $("#cancel").on("click", function() {
             notify();
         });
@@ -211,9 +222,11 @@ function registerContribution(context) {
                     autoCompleteSetBy: {
                         id: context.user.id
                     },
-                    completionOptions: getCompletionOptions()
+                    completionOptions: getCompletionOptions(),
                 }
-    
+
+                updatePR(patch);
+                    
                 gitClient.updatePullRequest(patch, pr.repositoryId, pr.pullRequestId)
                     .then(function() {
                         notify();
@@ -237,8 +250,10 @@ function registerContribution(context) {
                 const patch = {
                     status: 3,
                     completionOptions: getCompletionOptions(),
-                    lastMergeSourceCommit: pr.lastMergeSourceCommit || pr.pullRequestCard.gitPullRequest.lastMergeSourceCommit
+                    lastMergeSourceCommit: pr.lastMergeSourceCommit || pr.pullRequestCard.gitPullRequest.lastMergeSourceCommit,
                 }
+
+                updatePR(patch);
     
                 gitClient.updatePullRequest(patch, pr.repositoryId, pr.pullRequestId)
                     .then(function() {
@@ -248,6 +263,15 @@ function registerContribution(context) {
                     });
             });            
         });
+
+        function updatePR(patch) {
+            if (!document.getElementById("update-pr").checked) {
+                return;
+            }
+
+            patch.title = prTitle;
+            patch.description = prDescription;
+    }
 
         function validateForm() {
             var error;
@@ -263,24 +287,25 @@ function registerContribution(context) {
     
         function getCompletionOptions() {
             const completionOptions = {};
-            var mergeCommitMessage = selectedType;
+            prTitle = selectedType;
             const scope = getInputValue("scope");
             if (scope) {
-                mergeCommitMessage = mergeCommitMessage + `(${scope})`
+                prTitle = prTitle + `(${scope})`
             }
-            mergeCommitMessage = mergeCommitMessage + `: ${getInputValue("subject")}\n\n${getInputValue("msgbody")}`
+            prTitle = prTitle + `: ${getInputValue("subject")}`;
+            prDescription = getInputValue("msgbody");
             const breakingChanges = getInputValue("breaking-changes");
             const closes = getInputValue("closes");
             if (breakingChanges || closes) {
-                mergeCommitMessage = mergeCommitMessage + "\n\n";
+                prDescription = prDescription + "\n\n";
             }
             if (breakingChanges) {
-                mergeCommitMessage = mergeCommitMessage + `BREAKING CHANGE: ${breakingChanges}\n`
+                prDescription = prDescription + `BREAKING CHANGE: ${breakingChanges}\n`;
             }
             if (closes) {
-                mergeCommitMessage = mergeCommitMessage + `Closes: ${closes}\n`
+                prDescription = prDescription + `Closes: ${closes}\n`;
             }
-            completionOptions.mergeCommitMessage = mergeCommitMessage;
+            completionOptions.mergeCommitMessage = prTitle + "\n\n" + prDescription;
             if (document.getElementById("squash").checked) {
                 completionOptions.squashMerge = true;
             } else {
@@ -301,7 +326,8 @@ function registerContribution(context) {
                 // Set value in user scope
                 const preferences = {
                     transitionWorkItems: completionOptions.transitionWorkItems,
-                    deleteSourceBranch: completionOptions.deleteSourceBranch
+                    deleteSourceBranch: completionOptions.deleteSourceBranch,
+                    updatePR: document.getElementById("update-pr").checked
                 }
                 if (!saveSquash) {
                     preferences.squashMerge = completionOptions.squashMerge;
