@@ -152,6 +152,7 @@ function registerContribution(context) {
                         checkbox.checked = value.transitionWorkItems;
                     }
                     document.getElementById("delete-source-branch").checked = value.deleteSourceBranch;
+                    document.getElementById("update-pr").checked = value.updatePR;
                 });
             });
                     
@@ -214,10 +215,10 @@ function registerContribution(context) {
                         id: context.user.id
                     },
                     completionOptions: getCompletionOptions(),
-                    title: prTitle,
-                    description: prDescription
                 }
-    
+
+                updatePR(patch);
+                    
                 gitClient.updatePullRequest(patch, pr.repositoryId, pr.pullRequestId)
                     .then(function() {
                         notify();
@@ -242,9 +243,9 @@ function registerContribution(context) {
                     status: 3,
                     completionOptions: getCompletionOptions(),
                     lastMergeSourceCommit: pr.lastMergeSourceCommit || pr.pullRequestCard.gitPullRequest.lastMergeSourceCommit,
-                    title: prTitle,
-                    description: prDescription
                 }
+
+                updatePR(patch);
     
                 gitClient.updatePullRequest(patch, pr.repositoryId, pr.pullRequestId)
                     .then(function() {
@@ -254,6 +255,15 @@ function registerContribution(context) {
                     });
             });            
         });
+
+        function updatePR(patch) {
+            if (!document.getElementById("update-pr").checked) {
+                return;
+            }
+
+            patch.title = prTitle;
+            patch.description = prDescription;
+    }
 
         function validateForm() {
             var error;
@@ -308,7 +318,8 @@ function registerContribution(context) {
                 // Set value in user scope
                 const preferences = {
                     transitionWorkItems: completionOptions.transitionWorkItems,
-                    deleteSourceBranch: completionOptions.deleteSourceBranch
+                    deleteSourceBranch: completionOptions.deleteSourceBranch,
+                    updatePR: document.getElementById("update-pr").checked
                 }
                 if (!saveSquash) {
                     preferences.squashMerge = completionOptions.squashMerge;
