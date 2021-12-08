@@ -285,7 +285,7 @@ function registerContribution(context) {
                 prTitle = prTitle + `(${scope})`
             }
             prTitle = prTitle + `: ${getInputValue("subject")}`;
-            prDescription = `{getInputValue("msgbody")}`;
+            prDescription = getInputValue("msgbody");
             const breakingChanges = getInputValue("breaking-changes");
             const closes = getInputValue("closes");
             if (breakingChanges || closes) {
