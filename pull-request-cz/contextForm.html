@@ -7,6 +7,8 @@
     <style>
         html {
             box-sizing: border-box;
+            width: 100%;
+            height: 100%;
         }
 
         *,
@@ -16,19 +18,24 @@
         }
 
         body {
+            width: 100%;
+            height: 100%;
             min-width: 0;
             margin: 0;
-            overflow: auto;
+            overflow: hidden;
             background-color: transparent;
             color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
         }
 
         .widget-configuration {
             display: flex;
+            width: 100%;
+            height: 100%;
             min-width: 0;
-            min-height: 100vh;
+            min-height: 0;
             flex-direction: column;
             gap: 10px;
+            overflow-y: auto;
             padding: 14px 16px 16px;
             color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
         }
@@ -54,6 +61,22 @@
             max-width: 100%;
         }
 
+        /* The combo keeps the px width it was created with, so re-anchor its drop button. */
+        #type-of-change .combo {
+            position: relative;
+        }
+
+        #type-of-change .combo input {
+            padding-right: 22px;
+        }
+
+        #type-of-change .combo .drop-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+
         .widget-configuration input[type=text],
         .widget-configuration textarea {
             border-color: var(--border-color, rgba(var(--palette-neutral-20, 200, 200, 200), 1));
@@ -68,41 +91,43 @@
         }
 
         .widget-configuration textarea {
-            min-height: 96px;
+            height: 116px !important;
+            min-height: 84px;
             resize: vertical;
         }
 
-        .validation-error {
-            min-height: 20px;
-        }
-
         fieldset.checkbox {
+            display: flex;
             min-width: 0;
+            flex-direction: column;
+            gap: 8px;
             margin: 0;
             padding: 2px 0 0;
             border: 0;
         }
 
-        fieldset.checkbox input[type=checkbox] {
-            width: 18px;
-            height: 18px;
-            margin: 0 8px 8px 0;
-            accent-color: rgb(0, 120, 212);
-            vertical-align: top;
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
         }
 
-        fieldset.checkbox label {
-            display: inline-block;
-            max-width: calc(100% - 32px);
-            margin: 0 0 8px;
+        .checkbox-row input[type=checkbox] {
+            width: 18px;
+            height: 18px;
+            flex: 0 0 auto;
+            margin: 1px 0 0;
+            accent-color: rgb(0, 120, 212);
+        }
+
+        .checkbox-row label {
+            margin: 0;
             color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
             font-weight: 400;
             line-height: 20px;
-            vertical-align: top;
         }
 
         .ui-dialog-buttonpane {
-            margin-top: auto;
             padding-top: 4px;
         }
 
@@ -142,22 +167,14 @@
             background-color: rgb(0, 69, 120);
         }
 
-        @media (max-width: 420px) {
+        @media (max-width: 360px) {
             .widget-configuration {
                 gap: 8px;
                 padding: 10px 12px 12px;
             }
 
             .widget-configuration textarea {
-                min-height: 84px;
-            }
-
-            .ui-dialog-buttonset {
-                justify-content: stretch;
-            }
-
-            .ui-dialog-buttonset button {
-                flex: 1 1 100%;
+                height: 96px !important;
             }
         }
     </style>
@@ -195,14 +212,22 @@
                 placeholder="List any ISSUES CLOSED by this change (optional). E.g.: #31, #34" />
         </div>
         <fieldset class="checkbox">
-            <input type="checkbox" id="complete-workitems" name="check" checked="true" />
-            <label for="complete-workitems">Complete linked work items after merging</label><br />
-            <input type="checkbox" id="delete-source-branch" name="check" checked="true" />
-            <label id="delete-source-branch-label" for="delete-source-branch"></label><br />
-            <input type="checkbox" id="squash" name="check" />
-            <label for="squash">Squash changes when merging</label><br />
-            <input type="checkbox" id="update-pr" name="check" checked="true" />
-            <label for="update-pr">Update PR title and description with commit message</label><br />
+            <div class="checkbox-row">
+                <input type="checkbox" id="complete-workitems" name="check" checked="true" />
+                <label for="complete-workitems">Complete linked work items after merging</label>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="delete-source-branch" name="check" checked="true" />
+                <label id="delete-source-branch-label" for="delete-source-branch"></label>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="squash" name="check" />
+                <label for="squash">Squash changes when merging</label>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="update-pr" name="check" checked="true" />
+                <label for="update-pr">Update PR title and description with commit message</label>
+            </div>
         </fieldset>
         <div class="ui-dialog-buttonpane ui-helper-clearfix bowtie">
             <div class="ui-dialog-buttonset">
