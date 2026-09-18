@@ -5,10 +5,11 @@ var showCommitiZenMenuProvider = (function () {
             VSS.getService("ms.vss-web.dialog-service").then(function (dialogSvc) {
                 var registrationForm;                
                 const extInfo = VSS.getExtensionContext();
-                const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 465;
-                const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 600;
-                const dialogWidth = Math.max(280, Math.min(520, viewportWidth - 24));
-                const dialogHeight = Math.max(320, Math.min(680, viewportHeight - 24));
+                // This action runs in a small host frame, so window size is not the viewport; use the screen instead.
+                const screenWidth = (window.screen && window.screen.availWidth) || 0;
+                const screenHeight = (window.screen && window.screen.availHeight) || 0;
+                const dialogWidth = screenWidth && screenWidth < 560 ? Math.max(280, screenWidth - 24) : 465;
+                const dialogHeight = screenHeight && screenHeight < 700 ? Math.max(320, screenHeight - 96) : 600;
                 const dialogOptions = {
                     title: "CommitiZen",
                     width: dialogWidth,
