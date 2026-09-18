@@ -5,15 +5,15 @@ var showCommitiZenMenuProvider = (function () {
             VSS.getService("ms.vss-web.dialog-service").then(function (dialogSvc) {
                 var registrationForm;                
                 const extInfo = VSS.getExtensionContext();
-                // This action runs in a small host frame, so window size is not the viewport; use the screen instead.
+                // Azure DevOps clamps these to the room it has, so they are an upper bound.
+                // 440x640 is what a desktop dialog settles at; phones get a smaller frame
+                // and the form scrolls whenever the content does not fit.
                 const screenWidth = (window.screen && window.screen.availWidth) || 0;
-                const screenHeight = (window.screen && window.screen.availHeight) || 0;
-                const dialogWidth = screenWidth && screenWidth < 560 ? Math.max(280, screenWidth - 24) : 465;
-                const dialogHeight = screenHeight && screenHeight < 700 ? Math.max(320, screenHeight - 96) : 600;
+                const isNarrowScreen = screenWidth > 0 && screenWidth < 600;
                 const dialogOptions = {
                     title: "CommitiZen",
-                    width: dialogWidth,
-                    height: dialogHeight,
+                    width: isNarrowScreen ? 340 : 440,
+                    height: isNarrowScreen ? 560 : 640,
                     buttons: null
                 };
                 const contributionConfig = {
