@@ -5,26 +5,160 @@
     <title>CommitiZen</title>
     <script src="lib/VSS.SDK.js"></script>
     <style>
-        .ui-dialog-buttonset {
-            width: 100%;
-            text-align: right;
-            padding-top: 10px;
+        html {
+            box-sizing: border-box;
         }
 
-        .widget-configuration textarea {
-            width: 100% !important;
-            height: 100px !important;
-            color: rgba( 0, 0, 0 ,  1 );
-            color: rgba( var(--palette-neutral-100,0, 0, 0) ,  1 );
-        }
-
-        .widget-configuration input[type=text] {
-            color: rgba( 0, 0, 0 ,  1 );
-            color: rgba( var(--palette-neutral-100,0, 0, 0) ,  1 );
+        *,
+        *::before,
+        *::after {
+            box-sizing: inherit;
         }
 
         body {
+            min-width: 0;
+            margin: 0;
+            overflow: auto;
             background-color: transparent;
+            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+        }
+
+        .widget-configuration {
+            display: flex;
+            min-width: 0;
+            min-height: 100vh;
+            flex-direction: column;
+            gap: 10px;
+            padding: 14px 16px 16px;
+            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+        }
+
+        .widget-configuration label {
+            display: block;
+            margin: 0 0 4px;
+            color: var(--text-secondary-color, rgba(var(--palette-neutral-80, 51, 51, 51), 1));
+            font-weight: 600;
+        }
+
+        .single-line-text-input,
+        .multi-line-text-input,
+        #type-of-change {
+            min-width: 0;
+        }
+
+        .widget-configuration input[type=text],
+        .widget-configuration textarea,
+        #type-of-change .combo,
+        #type-of-change .combo input {
+            width: 100% !important;
+            max-width: 100%;
+        }
+
+        .widget-configuration input[type=text],
+        .widget-configuration textarea {
+            border-color: var(--border-color, rgba(var(--palette-neutral-20, 200, 200, 200), 1));
+            background-color: var(--background-color, rgba(var(--palette-neutral-0, 255, 255, 255), 1));
+            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+        }
+
+        .widget-configuration input[type=text]::placeholder,
+        .widget-configuration textarea::placeholder {
+            color: var(--text-disabled-color, rgba(var(--palette-neutral-60, 102, 102, 102), 1));
+            opacity: 1;
+        }
+
+        .widget-configuration textarea {
+            min-height: 96px;
+            resize: vertical;
+        }
+
+        .validation-error {
+            min-height: 20px;
+        }
+
+        fieldset.checkbox {
+            min-width: 0;
+            margin: 0;
+            padding: 2px 0 0;
+            border: 0;
+        }
+
+        fieldset.checkbox input[type=checkbox] {
+            width: 18px;
+            height: 18px;
+            margin: 0 8px 8px 0;
+            accent-color: rgb(0, 120, 212);
+            vertical-align: top;
+        }
+
+        fieldset.checkbox label {
+            display: inline-block;
+            max-width: calc(100% - 32px);
+            margin: 0 0 8px;
+            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+            font-weight: 400;
+            line-height: 20px;
+            vertical-align: top;
+        }
+
+        .ui-dialog-buttonpane {
+            margin-top: auto;
+            padding-top: 4px;
+        }
+
+        .ui-dialog-buttonset {
+            display: flex;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+            padding-top: 8px;
+        }
+
+        .ui-dialog-buttonset button {
+            margin: 0;
+        }
+
+        .ui-dialog-buttonset button:hover,
+        .ui-dialog-buttonset button:focus {
+            border-color: rgba(var(--palette-neutral-100, 0, 0, 0), .35);
+            background-color: rgba(var(--palette-neutral-100, 0, 0, 0), .08);
+            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+        }
+
+        .ui-dialog-buttonset button:active {
+            background-color: rgba(var(--palette-neutral-100, 0, 0, 0), .14);
+        }
+
+        .ui-dialog-buttonset button.cta:hover,
+        .ui-dialog-buttonset button.cta:focus {
+            border-color: rgb(0, 90, 158);
+            background-color: rgb(0, 90, 158);
+            color: rgb(255, 255, 255);
+        }
+
+        .ui-dialog-buttonset button.cta:active {
+            border-color: rgb(0, 69, 120);
+            background-color: rgb(0, 69, 120);
+        }
+
+        @media (max-width: 420px) {
+            .widget-configuration {
+                gap: 8px;
+                padding: 10px 12px 12px;
+            }
+
+            .widget-configuration textarea {
+                min-height: 84px;
+            }
+
+            .ui-dialog-buttonset {
+                justify-content: stretch;
+            }
+
+            .ui-dialog-buttonset button {
+                flex: 1 1 100%;
+            }
         }
     </style>
 </head>

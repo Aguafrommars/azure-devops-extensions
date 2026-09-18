@@ -19,6 +19,7 @@ function registerContribution(context) {
     "test - Adding missing tests or correcting existing tests",
     "build - Changes that affect the build system or external dependencies",
     "ci - Changes to the CI configuration files and/or scripts",
+    "chore - Other changes that do not modify source or test files",
     "revert - Revert a previous commit"
     ];
 
@@ -175,7 +176,7 @@ function registerContribution(context) {
             const container = $("#type-of-change");            
             const makeOptions = {
                 value: typeValue,
-                width: "413px",
+                width: "100%",
                 source:
                 commitTypes,
                 change: function () {
