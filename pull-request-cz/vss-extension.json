@@ -12,7 +12,7 @@
   },
   "links": {
       "getstarted": {
-          "uri": "https://github.com/aguacongas/azure-devops-extensions/blob/master/pull-request-cz/README.md"
+          "uri": "https://github.com/aguacongas/azure-devops-extensions/blob/master/README.md"
       },
       "support": {
           "uri": "https://github.com/aguacongas/azure-devops-extensions/issues"

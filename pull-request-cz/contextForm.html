@@ -5,28 +5,26 @@
     <title>CommitiZen</title>
     <script src="lib/VSS.SDK.js"></script>
     <style>
-        /* Azure DevOps clamps the dialog to the space it has, so the frame is a max,
-           not a promise: a 465x800 request can arrive as 441x642. The form therefore
-           caps at its design width and shrinks with the frame, keeping its gutters.
-           Never reintroduce a vh-based height here: it feeds the host's content
-           sizing, inflates the dialog past the viewport, and makes scrolling impossible. */
+        /* ADO's own stylesheet loads after this one and wins ties, so anything the
+           form owns is prefixed cz- and layout-critical rules use !important.
+           Don't use vh for height here — it feeds the host's sizing and breaks scroll. */
         :root {
-            --form-max-width: 394px;
-            --form-gutter: 16px;
-            --control-height: 32px;
-            --field-gap: 14px;
-            --accent-color: rgb(0, 120, 212);
-            --accent-hover-color: rgb(0, 90, 158);
-            --accent-active-color: rgb(0, 69, 120);
+            --cz-max-width: 640px;
+            --cz-control-height: 32px;
+            --cz-gap: 16px;
+            --cz-accent: rgb(0, 120, 212);
+            --cz-accent-hover: rgb(0, 90, 158);
+            --cz-accent-active: rgb(0, 69, 120);
+            --cz-error: rgb(205, 74, 69);
+            --cz-text: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+            --cz-text-muted: var(--text-secondary-color, rgba(var(--palette-neutral-80, 51, 51, 51), 1));
+            --cz-border: var(--border-color, rgba(var(--palette-neutral-20, 200, 200, 200), 1));
+            --cz-surface: var(--background-color, rgba(var(--palette-neutral-0, 255, 255, 255), 1));
         }
 
-        /* Scrolling is a hard requirement, so it is pinned here rather than left to the
-           document default, which the platform stylesheet could otherwise override.
-           The viewport scrolls and the body grows, so content is always reachable. */
         html {
             box-sizing: border-box;
             height: 100%;
-            overflow: auto !important;
         }
 
         *,
@@ -35,222 +33,277 @@
             box-sizing: inherit;
         }
 
+        /* The host owns the frame height; the form owns the one scrollbar inside it. */
         body {
-            height: auto !important;
-            min-height: 100%;
+            height: 100% !important;
             margin: 0;
-            overflow: visible !important;
+            overflow: hidden !important;
             background-color: transparent;
-            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+            color: var(--cz-text);
             font-size: 14px;
         }
 
-        .widget-configuration {
-            width: 100%;
-            max-width: var(--form-max-width);
+        .cz-form {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: var(--cz-max-width);
             margin: 0 auto;
-            padding: 16px var(--form-gutter) 20px;
-            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+            color: var(--cz-text);
         }
 
-        .widget-configuration > div {
-            margin-bottom: var(--field-gap);
+        /* The scrollable region. The button bar is a flex sibling below it, so it
+           always sits at the bottom instead of floating above empty space. */
+        .cz-fields {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 16px 0 0;
         }
 
-        .widget-configuration label {
-            display: block;
-            margin: 0 0 4px;
-            color: var(--text-secondary-color, rgba(var(--palette-neutral-80, 51, 51, 51), 1));
-            font-weight: 600;
+        .cz-error {
+            display: none !important;
+            margin: 0 0 var(--cz-gap) !important;
+            color: var(--cz-error) !important;
+            font-size: 12px;
+            line-height: 16px;
         }
 
-        .widget-configuration input[type=text],
-        .widget-configuration textarea,
+        .cz-error.is-visible {
+            display: block !important;
+        }
+
+        .cz-field {
+            margin: 0 0 var(--cz-gap) !important;
+            padding: 0 !important;
+        }
+
+        .cz-form label {
+            display: block !important;
+            margin: 0 0 4px !important;
+            padding: 0 !important;
+            color: var(--cz-text-muted) !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            line-height: 16px !important;
+        }
+
+        .cz-form input[type=text],
+        .cz-form textarea {
+            width: 100% !important;
+            padding: 6px 8px !important;
+            border: 1px solid var(--cz-border) !important;
+            border-radius: 2px !important;
+            background-color: var(--cz-surface) !important;
+            color: var(--cz-text) !important;
+            font-family: inherit !important;
+            font-size: 14px !important;
+            line-height: 18px !important;
+        }
+
+        .cz-form input[type=text] {
+            height: var(--cz-control-height) !important;
+        }
+
+        /* Real markup: .combo > .wrap > input, plus a .drop chevron. Pinned to the
+           shared control height so it lines up with the text inputs. */
         #type-of-change .combo {
             width: 100% !important;
+            height: var(--cz-control-height) !important;
         }
 
-        .widget-configuration input[type=text] {
-            height: var(--control-height);
-            padding: 0 8px;
+        #type-of-change .combo .wrap,
+        #type-of-change .combo .drop {
+            height: 100% !important;
         }
 
-        /* Real markup is .combo > .wrap > input plus a .drop chevron, both laid out by the
-           platform stylesheet, so only the outer width is pinned here. */
+        #type-of-change .combo .drop {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
         #type-of-change .combo input {
             width: 100% !important;
+            height: 100% !important;
+            padding: 0 8px !important;
+            border: 0 !important;
         }
 
-        .widget-configuration input[type=text],
-        .widget-configuration textarea {
-            border: 1px solid var(--border-color, rgba(var(--palette-neutral-20, 200, 200, 200), 1));
-            border-radius: 2px;
-            background-color: var(--background-color, rgba(var(--palette-neutral-0, 255, 255, 255), 1));
-            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
-            font-family: inherit;
-            font-size: inherit;
-        }
-
-        /* The combo keeps the platform's own border, so only the text controls get one. */
-        .widget-configuration input[type=text]:focus,
-        .widget-configuration textarea:focus {
-            border-color: var(--accent-color);
+        .cz-form input[type=text]:focus,
+        .cz-form textarea:focus {
+            border-color: var(--cz-accent) !important;
             outline: none;
         }
 
-        .widget-configuration input[type=text]::placeholder,
-        .widget-configuration textarea::placeholder {
+        .cz-form input[type=text]::placeholder,
+        .cz-form textarea::placeholder {
             color: var(--text-disabled-color, rgba(var(--palette-neutral-60, 102, 102, 102), 1));
             opacity: 1;
         }
 
-        /* No !important here: it would override the inline height the browser writes
-           while dragging, which silently breaks the resize grip. */
-        .widget-configuration textarea {
+        /* No !important on height — it would break the drag-resize grip. */
+        .cz-form textarea {
             height: 120px;
             min-height: 80px;
             max-height: 320px;
-            padding: 6px 8px;
             resize: vertical;
         }
 
-        fieldset.checkbox {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 0 0 var(--field-gap);
-            padding: 2px 0 0;
-            border: 0;
+        .cz-checks {
+            margin: 0 0 var(--cz-gap) !important;
+            padding: 0 !important;
+            border: 0 !important;
         }
 
-        .checkbox-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
+        .cz-check {
+            display: grid !important;
+            grid-template-columns: 16px 1fr;
+            column-gap: 8px;
+            align-items: start;
+            margin-bottom: 10px;
         }
 
-        .checkbox-row input[type=checkbox] {
-            width: 18px;
-            height: 18px;
-            flex: 0 0 auto;
-            margin: 1px 0 0;
-            accent-color: var(--accent-color);
-        }
-
-        .checkbox-row label {
-            margin: 0;
-            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
-            font-weight: 400;
-            line-height: 20px;
-        }
-
-        .ui-dialog-buttonpane {
+        .cz-check:last-child {
             margin-bottom: 0;
-            padding-top: 4px;
         }
 
-        .ui-dialog-buttonset {
+        /* Centres the box on the first line of a label that may wrap. */
+        .cz-check input[type=checkbox] {
+            width: 16px !important;
+            height: 16px !important;
+            margin: 2px 0 0 !important;
+            padding: 0 !important;
+            accent-color: var(--cz-accent);
+        }
+
+        .cz-check label {
+            margin: 0 !important;
+            color: var(--cz-text) !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            line-height: 20px !important;
+            cursor: pointer;
+        }
+
+        /* A flex footer, not a sticky one — always at the true bottom of the frame. */
+        .cz-actions {
+            flex: 0 0 auto;
             display: flex;
-            width: 100%;
-            justify-content: flex-end;
+            align-items: center;
             gap: 8px;
-            padding-top: 8px;
+            padding: 12px 0;
+            border-top: 1px solid var(--cz-border);
+            background-color: var(--cz-surface);
         }
 
-        .ui-dialog-buttonset button {
-            height: var(--control-height);
-            margin: 0;
-            padding: 0 14px;
+        .cz-version {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-right: auto;
+            overflow: hidden;
+            color: var(--cz-text-muted);
+            font-size: 10px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
-        .ui-dialog-buttonset button:hover,
-        .ui-dialog-buttonset button:focus {
+        /* Buttons don't shrink or wrap; the version label shrinks instead. */
+        .cz-actions button {
+            flex: 0 0 auto;
+            min-width: max-content;
+            height: var(--cz-control-height) !important;
+            margin: 0 !important;
+            padding: 0 14px !important;
+            white-space: nowrap;
+        }
+
+        .cz-actions button:hover,
+        .cz-actions button:focus {
             border-color: rgba(var(--palette-neutral-100, 0, 0, 0), .35);
             background-color: rgba(var(--palette-neutral-100, 0, 0, 0), .08);
-            color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
+            color: var(--cz-text);
         }
 
-        .ui-dialog-buttonset button:active {
+        .cz-actions button:active {
             background-color: rgba(var(--palette-neutral-100, 0, 0, 0), .14);
         }
 
-        .ui-dialog-buttonset button.cta:hover,
-        .ui-dialog-buttonset button.cta:focus {
-            border-color: var(--accent-hover-color);
-            background-color: var(--accent-hover-color);
+        .cz-actions button.cta:hover,
+        .cz-actions button.cta:focus {
+            border-color: var(--cz-accent-hover);
+            background-color: var(--cz-accent-hover);
             color: rgb(255, 255, 255);
         }
 
-        .ui-dialog-buttonset button.cta:active {
-            border-color: var(--accent-active-color);
-            background-color: var(--accent-active-color);
+        .cz-actions button.cta:active {
+            border-color: var(--cz-accent-active);
+            background-color: var(--cz-accent-active);
         }
     </style>
 </head>
 
 <body>
-    <div class="widget-configuration">
-        <span class="validation-error">
-            <span class="icon-error-exclamation"></span>
-            <span id="error" class="validation-error-text"></span>
-        </span>
-        <div id="type-of-change"></div>
-        <div class="single-line-text-input">
-            <label for="scope">Scope:</label>
-            <input id="scope" type="text" name="scope" placeholder="Denote the SCOPE of this change (optional)" />
-        </div>
-        <div class="single-line-text-input">
-            <label for="subject">Subject:</label>
-            <input id="subject" type="text" name="subject"
-                placeholder="Write a SHORT, IMPERATIVE tense description of the change" maxlength="50" />
-        </div>
-        <div class="multi-line-text-input">
-            <label for="msgbody">Body:</label>
-            <textarea id="msgbody" name="msgbody"
-                placeholder='Provide a LONGER description of the change (optional)'></textarea>
-        </div>
-        <div class="single-line-text-input">
-            <label for="breaking-changes">Breaking changes:</label>
-            <input id="breaking-changes" type="text" name="breaking-changes"
-                placeholder="List any BREAKING CHANGES (optional)" />
-        </div>
-        <div class="single-line-text-input">
-            <label for="closes">Closes:</label>
-            <input id="closes" type="text" name="closes"
-                placeholder="List any ISSUES CLOSED by this change (optional). E.g.: #31, #34" />
-        </div>
-        <fieldset class="checkbox">
-            <div class="checkbox-row">
-                <input type="checkbox" id="complete-workitems" name="check" checked="true" />
-                <label for="complete-workitems">Complete linked work items after merging</label>
+    <div class="cz-form">
+        <div class="cz-fields">
+            <div id="error" class="cz-error" role="alert"></div>
+            <div id="type-of-change" class="cz-field"></div>
+            <div class="cz-field">
+                <label for="scope">Scope:</label>
+                <input id="scope" type="text" name="scope" placeholder="Denote the SCOPE of this change (optional)" />
             </div>
-            <div class="checkbox-row">
-                <input type="checkbox" id="delete-source-branch" name="check" checked="true" />
-                <label id="delete-source-branch-label" for="delete-source-branch"></label>
+            <div class="cz-field">
+                <label for="subject">Subject:</label>
+                <input id="subject" type="text" name="subject"
+                    placeholder="Write a SHORT, IMPERATIVE tense description of the change" maxlength="50" />
             </div>
-            <div class="checkbox-row">
-                <input type="checkbox" id="squash" name="check" />
-                <label for="squash">Squash changes when merging</label>
+            <div class="cz-field">
+                <label for="msgbody">Body:</label>
+                <textarea id="msgbody" name="msgbody"
+                    placeholder='Provide a LONGER description of the change (optional)'></textarea>
             </div>
-            <div class="checkbox-row">
-                <input type="checkbox" id="update-pr" name="check" checked="true" />
-                <label for="update-pr">Update PR title and description with commit message</label>
+            <div class="cz-field">
+                <label for="breaking-changes">Breaking changes:</label>
+                <input id="breaking-changes" type="text" name="breaking-changes"
+                    placeholder="List any BREAKING CHANGES (optional)" />
             </div>
-        </fieldset>
-        <div class="ui-dialog-buttonpane ui-helper-clearfix bowtie">
-            <div class="ui-dialog-buttonset">
-                <button id="auto-complete" type="button" class="cta ui-button ui-widget ui-state-default ui-corner-all">
-                    <i class="ms-Button-icon bowtie-icon bowtie-trigger-auto icon-36"></i>
-                    Set auto-complete
-                </button>
-                <button id="complete" type="button" class="cta ui-button ui-widget ui-state-default ui-corner-all">
-                    <i class="ms-Button-icon bowtie-icon bowtie-tfvc-merge icon-36"></i>
-                    Complete
-                </button>
-                <button id="cancel" type="button" class="ui-button ui-widget ui-state-default ui-corner-all">
-                    Cancel
-                </button>
+            <div class="cz-field">
+                <label for="closes">Closes:</label>
+                <input id="closes" type="text" name="closes"
+                    placeholder="List any ISSUES CLOSED by this change (optional). E.g.: #31, #34" />
             </div>
+            <fieldset class="cz-checks">
+                <div class="cz-check">
+                    <input type="checkbox" id="complete-workitems" name="check" checked="true" />
+                    <label for="complete-workitems">Complete linked work items after merging</label>
+                </div>
+                <div class="cz-check">
+                    <input type="checkbox" id="delete-source-branch" name="check" checked="true" />
+                    <label id="delete-source-branch-label" for="delete-source-branch"></label>
+                </div>
+                <div class="cz-check">
+                    <input type="checkbox" id="squash" name="check" />
+                    <label for="squash">Squash changes when merging</label>
+                </div>
+                <div class="cz-check">
+                    <input type="checkbox" id="update-pr" name="check" checked="true" />
+                    <label for="update-pr">Update PR title and description with commit message</label>
+                </div>
+            </fieldset>
+        </div>
+        <div class="cz-actions bowtie">
+            <span id="version" class="cz-version"></span>
+            <button id="auto-complete" type="button" class="cta ui-button ui-widget ui-state-default ui-corner-all">
+                <i class="ms-Button-icon bowtie-icon bowtie-trigger-auto icon-36"></i>
+                Set auto-complete
+            </button>
+            <button id="complete" type="button" class="cta ui-button ui-widget ui-state-default ui-corner-all">
+                <i class="ms-Button-icon bowtie-icon bowtie-tfvc-merge icon-36"></i>
+                Complete
+            </button>
+            <button id="cancel" type="button" class="ui-button ui-widget ui-state-default ui-corner-all">
+                Cancel
+            </button>
         </div>
     </div>
     <script src="scripts/context.js"></script>
