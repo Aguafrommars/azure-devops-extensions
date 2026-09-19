@@ -7,12 +7,11 @@
     <style>
         /* Azure DevOps clamps the dialog to the space it has, so the frame is a max,
            not a promise: a 465x800 request can arrive as 441x642. The form therefore
-           caps at its design width and shrinks with the frame, keeping its gutters.
+           caps at its design width and shrinks with the frame.
            Never reintroduce a vh-based height here: it feeds the host's content
            sizing, inflates the dialog past the viewport, and makes scrolling impossible. */
         :root {
-            --form-max-width: 394px;
-            --form-gutter: 16px;
+            --form-max-width: 460px;
             --control-height: 32px;
             --field-gap: 14px;
             --accent-color: rgb(0, 120, 212);
@@ -36,10 +35,9 @@
         }
 
         body {
-            height: auto !important;
-            min-height: 100%;
+            height: 100% !important;
             margin: 0;
-            overflow: visible !important;
+            overflow: hidden !important;
             background-color: transparent;
             color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
             font-size: 14px;
@@ -48,13 +46,32 @@
         .widget-configuration {
             width: 100%;
             max-width: var(--form-max-width);
+            height: 100%;
+            overflow-y: auto;
             margin: 0 auto;
-            padding: 16px var(--form-gutter) 20px;
+            padding: 16px 0 0;
             color: var(--text-primary-color, rgba(var(--palette-neutral-100, 0, 0, 0), 1));
         }
 
-        .widget-configuration > div {
+        /* Hidden outright rather than left invisible, so an empty error never pushes
+           the first field down the form. */
+        .validation-error {
+            display: none;
+            align-items: flex-start;
+            gap: 6px;
             margin-bottom: var(--field-gap);
+            color: var(--error-text-color, rgb(205, 74, 69));
+            font-size: 12px;
+            line-height: 16px;
+        }
+
+        .validation-error.is-visible {
+            display: flex;
+        }
+
+        .widget-configuration > div {
+            margin: 0 0 var(--field-gap);
+            padding: 0;
         }
 
         .widget-configuration label {
@@ -76,9 +93,27 @@
         }
 
         /* Real markup is .combo > .wrap > input plus a .drop chevron, both laid out by the
-           platform stylesheet, so only the outer width is pinned here. */
+           platform stylesheet, so the parts are pinned to the shared control height to
+           line the combo up with the text inputs. */
+        #type-of-change .combo {
+            height: var(--control-height);
+        }
+
+        #type-of-change .combo .wrap,
+        #type-of-change .combo .drop {
+            height: 100%;
+        }
+
+        #type-of-change .combo .drop {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         #type-of-change .combo input {
             width: 100% !important;
+            height: 100%;
+            padding: 0 8px;
         }
 
         .widget-configuration input[type=text],
@@ -130,10 +165,11 @@
         }
 
         .checkbox-row input[type=checkbox] {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             flex: 0 0 auto;
-            margin: 1px 0 0;
+            /* Centres the box on the first line of a label that may wrap to two. */
+            margin: 2px 0 0;
             accent-color: var(--accent-color);
         }
 
@@ -144,17 +180,29 @@
             line-height: 20px;
         }
 
+        /* Sticks to the bottom of the form's own scroll area so the actions stay put
+           however tall the host decides to make the iframe. */
         .ui-dialog-buttonpane {
+            position: sticky;
+            bottom: 0;
             margin-bottom: 0;
-            padding-top: 4px;
+            padding: 8px 0 12px;
+            background-color: var(--background-color, rgba(var(--palette-neutral-0, 255, 255, 255), 1));
         }
 
         .ui-dialog-buttonset {
             display: flex;
             width: 100%;
+            align-items: center;
             justify-content: flex-end;
             gap: 8px;
             padding-top: 8px;
+        }
+
+        .version-label {
+            margin-right: auto;
+            color: var(--text-secondary-color, rgba(var(--palette-neutral-100, 0, 0, 0), .55));
+            font-size: 11px;
         }
 
         .ui-dialog-buttonset button {
@@ -239,6 +287,7 @@
         </fieldset>
         <div class="ui-dialog-buttonpane ui-helper-clearfix bowtie">
             <div class="ui-dialog-buttonset">
+                <span id="version" class="version-label"></span>
                 <button id="auto-complete" type="button" class="cta ui-button ui-widget ui-state-default ui-corner-all">
                     <i class="ms-Button-icon bowtie-icon bowtie-trigger-auto icon-36"></i>
                     Set auto-complete
