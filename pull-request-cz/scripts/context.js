@@ -1,10 +1,5 @@
 "use strict";
 
-VSS.require("TFS/Dashboards/WidgetHelpers", function (WidgetHelpers) {
-  WidgetHelpers.IncludeWidgetStyles();
-  WidgetHelpers.IncludeWidgetConfigurationStyles();
-});
-
 // We need to register the new contribution if this extension host is reused
 function registerContribution(context) {
   const pr = VSS.getConfiguration().properties.pullRequest;
@@ -324,15 +319,15 @@ function registerContribution(context) {
     }
 
     function validateForm() {
-      var error;
+      const errors = [];
       if (!selectedType) {
-        error = "The type must be selected.";
+        errors.push("The type must be selected.");
       }
       if (!getInputValue("subject")) {
-        error = error + "The subject cannot be empty.";
+        errors.push("The subject cannot be empty.");
       }
 
-      return error;
+      return errors.join(" ");
     }
 
     function getCompletionOptions() {
@@ -391,14 +386,15 @@ function registerContribution(context) {
     }
 
     function showError(error) {
-      document.getElementById("error").textContent = error;
-      document.querySelector(".validation-error").classList.add("is-visible");
+      const element = document.getElementById("error");
+      element.textContent = error;
+      element.classList.add("is-visible");
     }
 
     function hideError() {
-      document
-        .querySelector(".validation-error")
-        .classList.remove("is-visible");
+      const element = document.getElementById("error");
+      element.textContent = "";
+      element.classList.remove("is-visible");
     }
 
     function notify() {
@@ -440,22 +436,4 @@ VSS.ready(function () {
     (extensionContext && extensionContext.version
       ? extensionContext.version
       : "?");
-
-  // Nothing else ever calls resize, so the host can hand us a frame taller than the
-  // dialog actually shows. Cap the height once at load; passing the current width
-  // leaves it alone. The form fills the frame from there, so a dialog resize flows through.
-  // This cap must match the one main.js uses to size the dialog.
-  const isNarrowScreen =
-    window.screen &&
-    window.screen.availWidth > 0 &&
-    window.screen.availWidth < 600;
-  const screenHeight = (window.screen && window.screen.availHeight) || 900;
-  const maxFrameHeight = Math.max(
-    420,
-    Math.min(isNarrowScreen ? 480 : 760, Math.round(screenHeight * 0.6)),
-  );
-  VSS.resize(
-    document.documentElement.clientWidth,
-    Math.min(document.documentElement.clientHeight, maxFrameHeight),
-  );
 });

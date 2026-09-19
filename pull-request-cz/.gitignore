@@ -236,6 +236,9 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# VSS SDK is copied here from node_modules at package time
+lib/
+
 # Typescript v1 declaration files
 typings/
 

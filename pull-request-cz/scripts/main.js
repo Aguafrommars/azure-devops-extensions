@@ -5,21 +5,19 @@ var showCommitiZenMenuProvider = (function () {
       VSS.getService("ms.vss-web.dialog-service").then(function (dialogSvc) {
         var registrationForm;
         const extInfo = VSS.getExtensionContext();
-        // Azure DevOps clamps these to the room it has, so they are an upper bound.
-        // The height must stay in step with the cap context.js applies to the frame,
-        // or the dialog is left taller than the iframe it contains.
+        // Just the opening size. The host fills the iframe to the dialog via its
+        // own CSS, and keeps it that way on manual resize — context.js must never
+        // call VSS.resize, since that sets a fixed inline style that overrides it.
+        const NARROW_DIALOG_WIDTH = 340;
+        const NARROW_DIALOG_HEIGHT = 520;
+        const DEFAULT_DIALOG_WIDTH = 520;
+        const DEFAULT_DIALOG_HEIGHT = 760;
         const screenWidth = (window.screen && window.screen.availWidth) || 0;
-        const screenHeight =
-          (window.screen && window.screen.availHeight) || 900;
         const isNarrowScreen = screenWidth > 0 && screenWidth < 600;
-        const frameHeight = Math.max(
-          420,
-          Math.min(isNarrowScreen ? 480 : 760, Math.round(screenHeight * 0.6)),
-        );
         const dialogOptions = {
           title: "CommitiZen",
-          width: isNarrowScreen ? 340 : 520,
-          height: frameHeight + 76,
+          width: isNarrowScreen ? NARROW_DIALOG_WIDTH : DEFAULT_DIALOG_WIDTH,
+          height: isNarrowScreen ? NARROW_DIALOG_HEIGHT : DEFAULT_DIALOG_HEIGHT,
           buttons: null,
         };
         const contributionConfig = {
